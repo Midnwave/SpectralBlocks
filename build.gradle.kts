@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "9.3.1"
 }
 
-group = "com.horizonsmp"
+group = "com.blockforge"
 version = "1.0.0"
 
 java {
@@ -48,9 +48,9 @@ tasks.processResources {
 tasks.shadowJar {
     archiveClassifier.set("")
     // Relocate shaded libs to avoid conflicts with other plugins
-    relocate("com.github.retrooper.packetevents", "com.horizonsmp.spectralblocks.libs.packetevents")
-    relocate("io.github.retrooper.packetevents", "com.horizonsmp.spectralblocks.libs.retrooper")
-    relocate("org.bstats", "com.horizonsmp.spectralblocks.libs.bstats")
+    relocate("com.github.retrooper.packetevents", "com.blockforge.spectralblocks.libs.packetevents")
+    relocate("io.github.retrooper.packetevents", "com.blockforge.spectralblocks.libs.retrooper")
+    relocate("org.bstats", "com.blockforge.spectralblocks.libs.bstats")
 }
 
 tasks.build {
