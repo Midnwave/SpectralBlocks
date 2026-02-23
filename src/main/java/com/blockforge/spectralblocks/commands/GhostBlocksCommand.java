@@ -97,6 +97,13 @@ public class GhostBlocksCommand implements CommandExecutor {
             if (cb == null) return null;
             Material mat = GhostBlockItem.resolveMaterial(blockId);
             return GhostBlockItem.create(mat, blockId, cb.getNamespacedID());
+        } else if (blockId.startsWith("nexo:")) {
+            if (!plugin.getNexoIntegration().isEnabled()
+                    || !plugin.getNexoIntegration().isDataLoaded()) return null;
+            String id = blockId.substring("nexo:".length());
+            if (plugin.getNexoIntegration().getBlockData(id) == null) return null;
+            Material mat = GhostBlockItem.resolveMaterial(blockId);
+            return GhostBlockItem.create(mat, blockId, id);
         } else {
             String matName = blockId.replace("minecraft:", "").toUpperCase();
             Material mat = Material.matchMaterial(matName);
@@ -262,7 +269,7 @@ public class GhostBlocksCommand implements CommandExecutor {
         sender.sendMessage(plugin.getMessagesManager().getMiniMessage().deserialize(
                 "<gold>/ghostblocks gui</gold> <gray>— Open the ghost blocks GUI"));
         sender.sendMessage(plugin.getMessagesManager().getMiniMessage().deserialize(
-                "<gold>/ghostblocks get <minecraft:block|itemsadder:ns:id></gold> <gray>— Get a ghost block item"));
+                "<gold>/ghostblocks get <minecraft:block|itemsadder:ns:id|nexo:id></gold> <gray>— Get a ghost block item"));
         sender.sendMessage(plugin.getMessagesManager().getMiniMessage().deserialize(
                 "<gold>/ghostblocks toggle</gold> <gray>— Toggle your particle shimmer"));
         sender.sendMessage(plugin.getMessagesManager().getMiniMessage().deserialize(

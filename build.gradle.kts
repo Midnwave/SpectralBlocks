@@ -17,6 +17,7 @@ repositories {
     maven("https://repo.codemc.io/repository/maven-snapshots/")
     maven("https://maven.devs.beer/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.nexomc.com/releases")
 }
 
 dependencies {
@@ -28,6 +29,9 @@ dependencies {
 
     // ItemsAdder API — soft-depend; all IA 4.x versions share this API surface
     compileOnly("dev.lone:api-itemsadder:4.0.10")
+
+    // Nexo API — soft-depend for custom block support
+    compileOnly("com.nexomc:nexo:1.10.0")
 
     // WorldGuard — soft-depend for region flag checks
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.15")

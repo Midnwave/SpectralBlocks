@@ -32,6 +32,13 @@ public class SearchTab {
             results.addAll(ItemsAdderBlocksTab.search(plugin, query, Math.max(0, iaStart)));
         }
 
+        remaining = 36 - results.size();
+        if (remaining > 0 && plugin.getNexoIntegration().isEnabled()) {
+            int priorCount = vanillaCount + ItemsAdderBlocksTab.searchCount(plugin, query);
+            int nexoStart = Math.max(0, page - (int) Math.ceil((double) priorCount / 36));
+            results.addAll(NexoBlocksTab.search(plugin, query, Math.max(0, nexoStart)));
+        }
+
         if (results.isEmpty()) {
             return noResultsPage(plugin, query);
         }
@@ -42,6 +49,7 @@ public class SearchTab {
         if (query == null || query.isBlank()) return 1;
         int count = VanillaBlocksTab.searchCount(plugin, query);
         count += ItemsAdderBlocksTab.searchCount(plugin, query);
+        count += NexoBlocksTab.searchCount(plugin, query);
         return count;
     }
 

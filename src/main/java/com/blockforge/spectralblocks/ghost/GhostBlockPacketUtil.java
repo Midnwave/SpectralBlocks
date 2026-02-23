@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.blockforge.spectralblocks.SpectralBlocksPlugin;
 import com.blockforge.spectralblocks.integrations.ItemsAdderIntegration;
+import com.blockforge.spectralblocks.integrations.NexoIntegration;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -96,6 +97,11 @@ public class GhostBlockPacketUtil {
             ItemsAdderIntegration ia = plugin.getItemsAdderIntegration();
             if (!ia.isEnabled() || !ia.isDataLoaded()) return null;
             return ia.getBlockDataString(ghost.getBlockType());
+        }
+        if (ghost.isNexo()) {
+            NexoIntegration nexo = plugin.getNexoIntegration();
+            if (!nexo.isEnabled() || !nexo.isDataLoaded()) return null;
+            return nexo.getBlockDataString(ghost.getBlockType());
         }
         return ghost.getBlockType();
     }

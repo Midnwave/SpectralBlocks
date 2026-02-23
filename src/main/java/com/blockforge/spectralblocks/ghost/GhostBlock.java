@@ -33,12 +33,16 @@ public final class GhostBlock {
     public int getY() { return y; }
     public int getZ() { return z; }
 
-    // full bukkit blockdata string for vanilla, or "itemsadder:ns:id" for ia blocks
+    // full bukkit blockdata string for vanilla, "itemsadder:ns:id" for ia, or "nexo:id" for nexo
     public String getBlockType() { return blockType; }
     public long getPlacedAt() { return placedAt; }
 
     public boolean isItemsAdder() {
         return blockType.startsWith("itemsadder:");
+    }
+
+    public boolean isNexo() {
+        return blockType.startsWith("nexo:");
     }
 
     public String locationKey() {

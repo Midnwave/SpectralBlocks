@@ -4,10 +4,11 @@ version: '${version}'
 api-version: '1.21'
 description: The most advanced ghost blocks plugin — fake block packets, no collision, full ItemsAdder support.
 authors:
-  - HorizonSMP
+  - BlockForge
 
 softdepend:
   - ItemsAdder
+  - Nexo
   - WorldGuard
 
 commands:

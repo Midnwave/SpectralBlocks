@@ -11,6 +11,7 @@ import com.blockforge.spectralblocks.gui.GUIClickListener;
 import com.blockforge.spectralblocks.gui.MyGhostBlocksTab;
 import com.blockforge.spectralblocks.gui.SearchTab;
 import com.blockforge.spectralblocks.integrations.ItemsAdderIntegration;
+import com.blockforge.spectralblocks.integrations.NexoIntegration;
 import com.blockforge.spectralblocks.integrations.WorldGuardIntegration;
 import com.blockforge.spectralblocks.items.GhostBlockItem;
 import com.blockforge.spectralblocks.items.GhostRemoveTool;
@@ -35,6 +36,7 @@ public class SpectralBlocksPlugin extends JavaPlugin {
     private AuditLogger auditLogger;
     private WorldGuardIntegration worldGuardIntegration;
     private ItemsAdderIntegration itemsAdderIntegration;
+    private NexoIntegration nexoIntegration;
 
     @Override
     public void onLoad() {
@@ -79,6 +81,11 @@ public class SpectralBlocksPlugin extends JavaPlugin {
             getLogger().info("ItemsAdder detected — custom block support enabled.");
         }
 
+        nexoIntegration = new NexoIntegration();
+        if (nexoIntegration.isEnabled()) {
+            getLogger().info("Nexo detected — custom block support enabled.");
+        }
+
         ghostBlockManager = new GhostBlockManager(this, storage);
         ghostBlockManager.loadAll();
 
@@ -107,6 +114,10 @@ public class SpectralBlocksPlugin extends JavaPlugin {
 
         if (itemsAdderIntegration.isEnabled()) {
             pm.registerEvents(new ItemsAdderLoadListener(this), this);
+        }
+
+        if (nexoIntegration.isEnabled()) {
+            pm.registerEvents(new NexoLoadListener(this), this);
         }
 
         GhostBlocksCommand cmd = new GhostBlocksCommand(this);
@@ -144,6 +155,7 @@ public class SpectralBlocksPlugin extends JavaPlugin {
     public AuditLogger getAuditLogger() { return auditLogger; }
     public WorldGuardIntegration getWorldGuardIntegration() { return worldGuardIntegration; }
     public ItemsAdderIntegration getItemsAdderIntegration() { return itemsAdderIntegration; }
+    public NexoIntegration getNexoIntegration() { return nexoIntegration; }
 
     private boolean isPaper() {
         try {

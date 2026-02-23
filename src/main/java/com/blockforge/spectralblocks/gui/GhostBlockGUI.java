@@ -20,7 +20,7 @@ import java.util.*;
 
 public class GhostBlockGUI implements InventoryHolder {
 
-    public enum Tab { VANILLA, ITEMSADDER, MINE, SEARCH }
+    public enum Tab { VANILLA, ITEMSADDER, NEXO, MINE, SEARCH }
 
     private static final int ROWS = 6;
     private static final int SIZE = ROWS * 9;
@@ -30,8 +30,9 @@ public class GhostBlockGUI implements InventoryHolder {
     private static final int SLOT_PREV = 36;
     private static final int SLOT_PAGE_INFO = 40;
     private static final int SLOT_NEXT = 44;
-    private static final int SLOT_TAB_VANILLA = 46;
-    private static final int SLOT_TAB_IA = 47;
+    private static final int SLOT_TAB_VANILLA = 45;
+    private static final int SLOT_TAB_IA = 46;
+    private static final int SLOT_TAB_NEXO = 47;
     private static final int SLOT_TAB_MINE = 48;
     private static final int SLOT_TAB_SEARCH = 49;
 
@@ -81,6 +82,7 @@ public class GhostBlockGUI implements InventoryHolder {
         switch (currentTab) {
             case VANILLA -> currentContent = VanillaBlocksTab.getPage(plugin, currentPage);
             case ITEMSADDER -> currentContent = ItemsAdderBlocksTab.getPage(plugin, currentPage);
+            case NEXO -> currentContent = NexoBlocksTab.getPage(plugin, currentPage);
             case MINE -> currentContent = MyGhostBlocksTab.getPage(plugin, player, currentPage);
             case SEARCH -> currentContent = SearchTab.getResults(plugin, searchQuery, currentPage);
         }
@@ -102,7 +104,7 @@ public class GhostBlockGUI implements InventoryHolder {
             }
         }
         for (int i = 45; i < 54; i++) {
-            if (i != SLOT_TAB_VANILLA && i != SLOT_TAB_IA
+            if (i != SLOT_TAB_VANILLA && i != SLOT_TAB_IA && i != SLOT_TAB_NEXO
                     && i != SLOT_TAB_MINE && i != SLOT_TAB_SEARCH) {
                 inventory.setItem(i, pane);
             }
@@ -141,6 +143,8 @@ public class GhostBlockGUI implements InventoryHolder {
                 Material.GRASS_BLOCK, plugin.getMessagesManager().format("gui-tab-vanilla")));
         inventory.setItem(SLOT_TAB_IA, buildTabButton(Tab.ITEMSADDER,
                 Material.MUSHROOM_STEM, plugin.getMessagesManager().format("gui-tab-itemsadder")));
+        inventory.setItem(SLOT_TAB_NEXO, buildTabButton(Tab.NEXO,
+                Material.NOTE_BLOCK, plugin.getMessagesManager().format("gui-tab-nexo")));
         inventory.setItem(SLOT_TAB_MINE, buildTabButton(Tab.MINE,
                 Material.ENDER_CHEST, plugin.getMessagesManager().format("gui-tab-mine")));
         inventory.setItem(SLOT_TAB_SEARCH, buildTabButton(Tab.SEARCH,
@@ -153,6 +157,7 @@ public class GhostBlockGUI implements InventoryHolder {
 
         if (rawSlot == SLOT_TAB_VANILLA) { switchTab(Tab.VANILLA); return; }
         if (rawSlot == SLOT_TAB_IA)      { switchTab(Tab.ITEMSADDER); return; }
+        if (rawSlot == SLOT_TAB_NEXO)    { switchTab(Tab.NEXO); return; }
         if (rawSlot == SLOT_TAB_MINE)    { switchTab(Tab.MINE); return; }
         if (rawSlot == SLOT_TAB_SEARCH)  { initiateSearch(); return; }
 
@@ -248,6 +253,7 @@ public class GhostBlockGUI implements InventoryHolder {
         switch (currentTab) {
             case VANILLA -> total = VanillaBlocksTab.getTotalBlocks(plugin);
             case ITEMSADDER -> total = ItemsAdderBlocksTab.getTotalBlocks(plugin);
+            case NEXO -> total = NexoBlocksTab.getTotalBlocks(plugin);
             case MINE -> total = plugin.getGhostBlockManager().getByOwner(player.getUniqueId()).size();
             case SEARCH -> total = SearchTab.getTotalResults(plugin, searchQuery);
             default -> total = 0;

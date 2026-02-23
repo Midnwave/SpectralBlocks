@@ -70,6 +70,13 @@ public class GhostBlocksTabCompleter implements TabCompleter {
             }
         }
 
+        if (plugin.getNexoIntegration().isEnabled()
+                && plugin.getNexoIntegration().isDataLoaded()) {
+            for (String nexoId : plugin.getNexoIntegration().getAllBlockIds()) {
+                if (nexoId.startsWith(lower)) suggestions.add(nexoId);
+            }
+        }
+
         return suggestions.stream()
                 .filter(s -> s.startsWith(lower))
                 .sorted()

@@ -66,6 +66,14 @@ public class GhostBlockItem {
             return Material.MUSHROOM_STEM;
         }
 
+        if (blockType.startsWith("nexo:")) {
+            SpectralBlocksPlugin plugin = SpectralBlocksPlugin.getInstance();
+            org.bukkit.block.data.BlockData bd =
+                    plugin.getNexoIntegration().getBlockData(blockType);
+            if (bd != null) return bd.getMaterial();
+            return Material.NOTE_BLOCK;
+        }
+
         String clean = blockType;
         int bracket = clean.indexOf('[');
         if (bracket != -1) clean = clean.substring(0, bracket);
