@@ -1,0 +1,44 @@
+# ============================================================
+#  SpectralBlocks Configuration
+#  DO NOT change config-version — it is used for auto-migration
+# ============================================================
+config-version: 1
+
+# Cooldown in seconds between ghost block placements (0 = disabled)
+cooldown-seconds: 5
+
+# Default ghost block limit when no spectralblocks.limit.<n> permission matches
+# Set to -1 for unlimited by default
+default-limit: 50
+
+# World restrictions
+worlds:
+  # 'blacklist' = all worlds allowed EXCEPT those listed
+  # 'whitelist' = only listed worlds allowed
+  mode: blacklist
+  list: []
+
+# Particle shimmer shown only to block owners (and admins with seeghost permission)
+particles:
+  enabled: true
+  # Particle type — must be a valid Bukkit Particle enum name
+  type: END_ROD
+  # How often to spawn particles (in ticks; 20 = 1 second)
+  interval-ticks: 20
+  # Radius within which to spawn particles around the ghost block center
+  spread: 0.5
+
+# bStats anonymous metrics (https://bstats.org/)
+metrics: true
+
+# Write an audit log of all placements and removals to plugins/SpectralBlocks/audit.log
+audit-log: true
+
+# GUI settings
+gui:
+  # Title of the main ghost blocks GUI
+  title: "<gradient:#7B68EE:#00CED1><bold>Spectral Blocks</bold></gradient>"
+  # Rows for the main GUI (must be 6)
+  rows: 6
+  # Border glass pane material (must be a valid dye color variant)
+  border-material: GRAY_STAINED_GLASS_PANE

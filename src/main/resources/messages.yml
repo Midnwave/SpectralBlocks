@@ -1,0 +1,78 @@
+# ============================================================
+#  SpectralBlocks Messages
+#  Supports MiniMessage format (https://docs.advntr.dev/minimessage)
+#  Available color tags: <red>, <green>, <gold>, <gray>, <#RRGGBB>
+#  Gradients: <gradient:#color1:#color2>text</gradient>
+#  Placeholders: <player>, <block>, <count>, <limit>, <world>, <x>, <y>, <z>
+# ============================================================
+
+prefix: "<dark_gray>[<gradient:#7B68EE:#00CED1>SpectralBlocks</gradient><dark_gray>]"
+
+no-permission: "<prefix> <red>You don't have permission to do that."
+player-only: "<prefix> <red>This command can only be run by a player."
+unknown-subcommand: "<prefix> <red>Unknown subcommand. Use <gold>/ghostblocks help</gold> for usage."
+
+# Ghost block placement
+placed: "<prefix> <gray>Ghost block placed at <gold><x>, <y>, <z></gold>."
+place-limit-reached: "<prefix> <red>You've reached your ghost block limit of <gold><limit></gold>. Remove some to place more."
+place-cooldown: "<prefix> <red>Please wait before placing another ghost block."
+place-world-denied: "<prefix> <red>Ghost blocks are not allowed in this world."
+place-region-denied: "<prefix> <red>You cannot place ghost blocks in this region."
+place-occupied: "<prefix> <red>A ghost block already exists at that location."
+
+# Ghost block removal
+removed: "<prefix> <gray>Ghost block removed."
+remove-not-yours: "<prefix> <red>That ghost block doesn't belong to you."
+remove-not-found: "<prefix> <red>No ghost block found there."
+
+# /ghostblocks get
+get-usage: "<prefix> <gray>Usage: <gold>/ghostblocks get <minecraft:block_id|itemsadder:namespace:id></gold>"
+get-unknown-block: "<prefix> <red>Unknown block: <gold><block></gold>."
+get-given: "<prefix> <gray>Given ghost block item for <gold><block></gold>."
+get-inventory-full: "<prefix> <red>Your inventory is full."
+
+# /ghostblocks toggle
+toggle-particles-on: "<prefix> <green>Ghost block shimmer <bold>enabled</bold>."
+toggle-particles-off: "<prefix> <gray>Ghost block shimmer <bold>disabled</bold>."
+
+# Admin commands
+admin-removed-player: "<prefix> <gray>Removed <gold><count></gold> ghost block(s) from <gold><player></gold>."
+admin-removed-none: "<prefix> <gray>No ghost blocks found for <gold><player></gold>."
+admin-list-header: "<prefix> <gray>Ghost blocks for <gold><player></gold> (<count> total):"
+admin-list-entry: "  <dark_gray>• <gold><block></gold> <gray>@ <world> (<x>, <y>, <z>)"
+admin-reveal-on: "<prefix> <green>Now showing shimmer on ALL ghost blocks."
+admin-reveal-off: "<prefix> <gray>Stopped showing all ghost block shimmers."
+admin-player-not-found: "<prefix> <red>Player <gold><player></gold> not found."
+
+# Reload
+reload-success: "<prefix> <green>Configuration and messages reloaded."
+
+# GUI labels
+gui-tab-vanilla: "<bold><white>Vanilla Blocks</white></bold>"
+gui-tab-itemsadder: "<bold><aqua>ItemsAdder Blocks</aqua></bold>"
+gui-tab-mine: "<bold><gold>My Ghost Blocks</gold></bold>"
+gui-tab-search: "<bold><yellow>Search</yellow></bold>"
+gui-next-page: "<green>▶ Next Page</green>"
+gui-prev-page: "<green>◀ Prev Page</green>"
+gui-page-info: "<gray>Page <gold><page></gold> / <gold><total></gold>"
+gui-block-lore-vanilla: "<gray>Left-click to receive ghost block item"
+gui-block-lore-ia: "<gray>Left-click to receive ghost block item\n<dark_gray>ItemsAdder: <gold><block>"
+gui-mine-entry-lore: "<gray>World: <gold><world></gold>\n<gray>Position: <gold><x>, <y>, <z></gold>\n<red>Right-click to remove"
+gui-search-prompt-name: "<yellow>🔍 Search Blocks"
+gui-search-prompt-lore: "<gray>Click and type in chat to search"
+gui-ia-not-loaded: "<red>ItemsAdder not loaded yet.\nPlease wait for the server to finish starting."
+gui-no-results: "<red>No results found for '<query>'."
+gui-no-ghost-blocks: "<gray>You have no ghost blocks placed yet."
+
+# Ghost block item
+ghost-item-name: "<gradient:#7B68EE:#00CED1>✨ Ghost <block></gradient>"
+ghost-item-lore: |
+  <gray>Type: <gold><block>
+  <gray>Right-click a block face to place.
+  <dark_gray>Sneak + right-click interactable blocks.
+
+# Ghost remover tool
+remover-name: "<red>◆ Ghost Remover</red>"
+remover-lore: |
+  <gray>Right-click a ghost block to remove it.
+  <dark_gray>Only removes your own ghost blocks.

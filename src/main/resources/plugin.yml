@@ -1,0 +1,75 @@
+name: SpectralBlocks
+main: com.horizonsmp.spectralblocks.SpectralBlocksPlugin
+version: '${version}'
+api-version: '1.21'
+description: The most advanced ghost blocks plugin — fake block packets, no collision, full ItemsAdder support.
+authors:
+  - HorizonSMP
+
+softdepend:
+  - ItemsAdder
+  - WorldGuard
+
+commands:
+  ghostblocks:
+    description: SpectralBlocks main command
+    usage: /ghostblocks <gui|get|toggle|admin|reload>
+    aliases:
+      - gb
+      - spectralblocks
+
+permissions:
+  spectralblocks.use:
+    description: Place ghost blocks
+    default: op
+  spectralblocks.get:
+    description: Use /ghostblocks get to receive a ghost block item
+    default: op
+  spectralblocks.gui:
+    description: Open the ghost blocks GUI
+    default: op
+  spectralblocks.toggle:
+    description: Toggle personal particle shimmer visibility
+    default: op
+
+  spectralblocks.limit.10:
+    description: Limit of 10 ghost blocks
+    default: false
+  spectralblocks.limit.25:
+    description: Limit of 25 ghost blocks
+    default: false
+  spectralblocks.limit.50:
+    description: Limit of 50 ghost blocks
+    default: false
+  spectralblocks.limit.100:
+    description: Limit of 100 ghost blocks
+    default: false
+  spectralblocks.limit.250:
+    description: Limit of 250 ghost blocks
+    default: false
+  spectralblocks.limit.500:
+    description: Limit of 500 ghost blocks
+    default: false
+
+  spectralblocks.bypass.limit:
+    description: Bypass ghost block placement limit
+    default: op
+  spectralblocks.bypass.cooldown:
+    description: Bypass ghost block placement cooldown
+    default: op
+  spectralblocks.bypass.world:
+    description: Place ghost blocks in blacklisted worlds
+    default: op
+
+  spectralblocks.admin:
+    description: Access all admin subcommands
+    default: op
+  spectralblocks.admin.seeghost:
+    description: See the shimmer on ALL ghost blocks (not just own)
+    default: op
+  spectralblocks.admin.reload:
+    description: Reload plugin config and messages
+    default: op
+  spectralblocks.admin.remove:
+    description: Remove other players' ghost blocks
+    default: op
