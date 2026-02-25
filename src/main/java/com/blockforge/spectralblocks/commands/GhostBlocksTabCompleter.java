@@ -25,11 +25,19 @@ public class GhostBlocksTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return filterPrefix(Arrays.asList("gui", "get", "toggle", "remover", "admin", "reload", "help"), args[0]);
+            List<String> subs = new ArrayList<>();
+            subs.add("help");
+            if (sender.hasPermission("spectralblocks.gui")) subs.add("gui");
+            if (sender.hasPermission("spectralblocks.get")) subs.add("get");
+            if (sender.hasPermission("spectralblocks.toggle")) subs.add("toggle");
+            if (sender.hasPermission("spectralblocks.use")) subs.add("remover");
+            if (sender.hasPermission("spectralblocks.admin")) subs.add("admin");
+            if (sender.hasPermission("spectralblocks.admin.reload")) subs.add("reload");
+            return filterPrefix(subs, args[0]);
         }
 
         return switch (args[0].toLowerCase()) {
-            case "get" -> args.length == 2 ? completeBlockId(args[1]) : List.of();
+            case "get" -> sender.hasPermission("spectralblocks.get") && args.length == 2 ? completeBlockId(args[1]) : List.of();
             case "admin" -> completeAdmin(sender, args);
             default -> List.of();
         };
