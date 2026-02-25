@@ -13,8 +13,7 @@ java {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://repo.codemc.io/repository/maven-releases/")
-    maven("https://repo.codemc.io/repository/maven-snapshots/")
+    // codemc repos removed — no longer needed without PacketEvents
     maven("https://maven.devs.beer/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.nexomc.com/releases")
@@ -23,9 +22,6 @@ repositories {
 dependencies {
     // Paper API — compile against 1.21.4, compatible down to 1.21 at runtime
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-
-    // PacketEvents — shaded into the JAR for fake block packet delivery
-    implementation("com.github.retrooper:packetevents-spigot:2.11.2")
 
     // ItemsAdder API — soft-depend; all IA 4.x versions share this API surface
     compileOnly("dev.lone:api-itemsadder:4.0.10")
@@ -52,8 +48,6 @@ tasks.processResources {
 tasks.shadowJar {
     archiveClassifier.set("")
     // Relocate shaded libs to avoid conflicts with other plugins
-    relocate("com.github.retrooper.packetevents", "com.blockforge.spectralblocks.libs.packetevents")
-    relocate("io.github.retrooper.packetevents", "com.blockforge.spectralblocks.libs.retrooper")
     relocate("org.bstats", "com.blockforge.spectralblocks.libs.bstats")
 }
 

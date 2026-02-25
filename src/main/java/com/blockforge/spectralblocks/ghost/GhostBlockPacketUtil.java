@@ -1,72 +1,85 @@
 package com.blockforge.spectralblocks.ghost;
 
-import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
-import com.github.retrooper.packetevents.util.Vector3i;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.blockforge.spectralblocks.SpectralBlocksPlugin;
 import com.blockforge.spectralblocks.integrations.ItemsAdderIntegration;
 import com.blockforge.spectralblocks.integrations.NexoIntegration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+/**
+ * Manages ghost block visuals using BlockDisplay entities.
+ * Display entities are purely visual with no collision — players can walk through them.
+ * Entities are non-persistent and re-spawned via ChunkLoadListener as chunks load.
+ */
 public class GhostBlockPacketUtil {
 
     private final SpectralBlocksPlugin plugin;
+
+    /** Tracks spawned display entity UUIDs by ghost block location key */
+    private final Map<String, UUID> displayEntities = new ConcurrentHashMap<>();
 
     public GhostBlockPacketUtil(SpectralBlocksPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void sendGhostBlock(Player player, GhostBlock ghost) {
-        String blockDataString = resolveBlockDataString(ghost);
-        if (blockDataString == null) return;
-        sendBlockPacket(player, ghost.getWorld(), ghost.getX(), ghost.getY(), ghost.getZ(), blockDataString);
+    /** Spawn a BlockDisplay entity for the given ghost block. */
+    public void spawnDisplayEntity(GhostBlock ghost) {
+        BlockData blockData = resolveBlockData(ghost);
+        if (blockData == null) return;
+
+        World world = Bukkit.getWorld(ghost.getWorld());
+        if (world == null) return;
+
+        // remove stale entity at this location if present
+        removeDisplayEntity(ghost.locationKey());
+
+        Location loc = new Location(world, ghost.getX(), ghost.getY(), ghost.getZ());
+        try {
+            BlockDisplay display = world.spawn(loc, BlockDisplay.class, entity -> {
+                entity.setBlock(blockData);
+                entity.setPersistent(false);
+                entity.setGravity(false);
+                entity.addScoreboardTag("spectralblocks_ghost");
+            });
+            displayEntities.put(ghost.locationKey(), display.getUniqueId());
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING,
+                    "Failed to spawn ghost block display at " + ghost.locationKey(), e);
+        }
     }
 
-    public void restoreBlock(Player player, GhostBlock ghost) {
-        World world = player.getServer().getWorld(ghost.getWorld());
-        if (world == null) return;
-        Location loc = new Location(world, ghost.getX(), ghost.getY(), ghost.getZ());
-        String realBlockData = loc.getBlock().getBlockData().getAsString();
-        sendBlockPacket(player, ghost.getWorld(), ghost.getX(), ghost.getY(), ghost.getZ(), realBlockData);
+    /** Remove the display entity for the given ghost block. */
+    public void removeDisplayEntity(GhostBlock ghost) {
+        removeDisplayEntity(ghost.locationKey());
     }
+
+    // ---- backward-compatible methods called by GhostBlockManager ----
 
     public void broadcastGhostBlock(GhostBlock ghost) {
-        String blockDataString = resolveBlockDataString(ghost);
-        if (blockDataString == null) return;
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (!player.getWorld().getName().equals(ghost.getWorld())) continue;
-            sendBlockPacket(player, ghost.getWorld(), ghost.getX(), ghost.getY(), ghost.getZ(), blockDataString);
-        }
+        spawnDisplayEntity(ghost);
     }
 
-    // sends the real block back to everyone, undoing the ghost visual
     public void broadcastRestoreBlock(GhostBlock ghost) {
-        World world = plugin.getServer().getWorld(ghost.getWorld());
-        String realBlockData = world != null
-                ? new Location(world, ghost.getX(), ghost.getY(), ghost.getZ()).getBlock().getBlockData().getAsString()
-                : "minecraft:air";
-
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (!player.getWorld().getName().equals(ghost.getWorld())) continue;
-            sendBlockPacket(player, ghost.getWorld(), ghost.getX(), ghost.getY(), ghost.getZ(), realBlockData);
-        }
+        removeDisplayEntity(ghost);
     }
 
-    public void sendAllGhostBlocksInWorld(Player player, Collection<GhostBlock> ghostBlocks) {
-        String worldName = player.getWorld().getName();
-        for (GhostBlock ghost : ghostBlocks) {
-            if (!ghost.getWorld().equals(worldName)) continue;
-            if (!isInRange(player, ghost)) continue;
-            sendGhostBlock(player, ghost);
-        }
-    }
+    // ---- chunk / join helpers ----
 
+    /**
+     * Ensure display entities exist for all ghost blocks in the given chunk.
+     * Called by ChunkLoadListener when a chunk is sent to a player.
+     */
     public void sendGhostBlocksInChunk(Player player, String worldName, int chunkX, int chunkZ,
                                         Collection<GhostBlock> ghostBlocks) {
         for (GhostBlock ghost : ghostBlocks) {
@@ -74,21 +87,59 @@ public class GhostBlockPacketUtil {
             int blockChunkX = Math.floorDiv(ghost.getX(), 16);
             int blockChunkZ = Math.floorDiv(ghost.getZ(), 16);
             if (blockChunkX == chunkX && blockChunkZ == chunkZ) {
-                sendGhostBlock(player, ghost);
+                ensureEntityExists(ghost);
             }
         }
     }
 
-    private void sendBlockPacket(Player player, String worldName, int x, int y, int z, String blockDataString) {
+    /**
+     * Ensure display entities exist for all ghost blocks visible to the player.
+     * Called on player join as a fallback for non-Paper servers.
+     */
+    public void sendAllGhostBlocksInWorld(Player player, Collection<GhostBlock> ghostBlocks) {
+        String worldName = player.getWorld().getName();
+        for (GhostBlock ghost : ghostBlocks) {
+            if (!ghost.getWorld().equals(worldName)) continue;
+            ensureEntityExists(ghost);
+        }
+    }
+
+    /** Remove all tracked display entities (used on plugin disable). */
+    public void removeAllDisplayEntities() {
+        for (UUID entityUuid : displayEntities.values()) {
+            Entity entity = Bukkit.getEntity(entityUuid);
+            if (entity != null) entity.remove();
+        }
+        displayEntities.clear();
+    }
+
+    // ---- internals ----
+
+    private void ensureEntityExists(GhostBlock ghost) {
+        UUID existingUuid = displayEntities.get(ghost.locationKey());
+        if (existingUuid != null) {
+            Entity existing = Bukkit.getEntity(existingUuid);
+            if (existing != null && !existing.isDead()) return;
+        }
+        spawnDisplayEntity(ghost);
+    }
+
+    private void removeDisplayEntity(String locationKey) {
+        UUID entityUuid = displayEntities.remove(locationKey);
+        if (entityUuid == null) return;
+        Entity entity = Bukkit.getEntity(entityUuid);
+        if (entity != null) entity.remove();
+    }
+
+    private BlockData resolveBlockData(GhostBlock ghost) {
+        String blockDataString = resolveBlockDataString(ghost);
+        if (blockDataString == null) return null;
         try {
-            var clientVersion = PacketEvents.getAPI().getServerManager().getVersion().toClientVersion();
-            WrappedBlockState state = WrappedBlockState.getByString(clientVersion, blockDataString);
-            WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(
-                    new Vector3i(x, y, z), state.getGlobalId());
-            PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+            return Bukkit.createBlockData(blockDataString);
         } catch (Exception e) {
             plugin.getLogger().log(Level.WARNING,
-                    "failed to send ghost block packet to " + player.getName() + " at " + x + "," + y + "," + z, e);
+                    "Failed to parse block data: " + blockDataString, e);
+            return null;
         }
     }
 
@@ -104,13 +155,5 @@ public class GhostBlockPacketUtil {
             return nexo.getBlockDataString(ghost.getBlockType());
         }
         return ghost.getBlockType();
-    }
-
-    private boolean isInRange(Player player, GhostBlock ghost) {
-        if (!player.getWorld().getName().equals(ghost.getWorld())) return false;
-        int viewDist = player.getServer().getViewDistance() * 16;
-        int dx = player.getLocation().getBlockX() - ghost.getX();
-        int dz = player.getLocation().getBlockZ() - ghost.getZ();
-        return (dx * dx + dz * dz) <= (viewDist * viewDist);
     }
 }

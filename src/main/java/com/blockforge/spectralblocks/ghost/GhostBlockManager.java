@@ -95,8 +95,7 @@ public class GhostBlockManager {
         storage.save(ghost);
         cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
 
-        // delay 1 tick so the packet arrives after Paper's block correction from the cancelled event
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> packetUtil.broadcastGhostBlock(ghost), 1L);
+        packetUtil.broadcastGhostBlock(ghost);
 
         plugin.getAuditLogger().logPlace(player.getUniqueId(), player.getName(), ghost);
         return PlaceResult.SUCCESS;

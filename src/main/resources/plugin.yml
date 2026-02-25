@@ -15,6 +15,7 @@ commands:
   ghostblocks:
     description: SpectralBlocks main command
     usage: /ghostblocks <gui|get|toggle|admin|reload>
+    permission: spectralblocks.use
     aliases:
       - gb
       - spectralblocks

@@ -26,7 +26,7 @@ public class GhostBlocksTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> subs = new ArrayList<>();
-            subs.add("help");
+            if (sender.hasPermission("spectralblocks.use")) subs.add("help");
             if (sender.hasPermission("spectralblocks.gui")) subs.add("gui");
             if (sender.hasPermission("spectralblocks.get")) subs.add("get");
             if (sender.hasPermission("spectralblocks.toggle")) subs.add("toggle");

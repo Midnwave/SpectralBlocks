@@ -1,6 +1,5 @@
 package com.blockforge.spectralblocks;
 
-import com.github.retrooper.packetevents.PacketEvents;
 import com.blockforge.spectralblocks.audit.AuditLogger;
 import com.blockforge.spectralblocks.commands.GhostBlocksCommand;
 import com.blockforge.spectralblocks.commands.GhostBlocksTabCompleter;
@@ -18,7 +17,6 @@ import com.blockforge.spectralblocks.items.GhostRemoveTool;
 import com.blockforge.spectralblocks.listeners.*;
 import com.blockforge.spectralblocks.particles.ParticleManager;
 import com.blockforge.spectralblocks.storage.SQLiteStorage;
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,12 +39,6 @@ public class SpectralBlocksPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        // packetevents must be initialized in onload
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().getSettings()
-                .reEncodeByDefault(false)
-                .checkForUpdates(false);
-        PacketEvents.getAPI().load();
     }
 
     @Override
@@ -92,8 +84,6 @@ public class SpectralBlocksPlugin extends JavaPlugin {
         particleManager = new ParticleManager(this);
         particleManager.start();
 
-        PacketEvents.getAPI().init();
-
         GhostBlockItem.init(this);
         GhostRemoveTool.init(this);
         MyGhostBlocksTab.init(this);
@@ -107,9 +97,9 @@ public class SpectralBlocksPlugin extends JavaPlugin {
 
         if (isPaper()) {
             pm.registerEvents(new ChunkLoadListener(this), this);
-            getLogger().info("Paper detected — per-player chunk load packets enabled.");
+            getLogger().info("Paper detected — per-chunk display entity spawning enabled.");
         } else {
-            getLogger().info("Spigot mode — ghost blocks will be sent on player join.");
+            getLogger().info("Spigot mode — ghost block display entities will be spawned on player join.");
         }
 
         if (itemsAdderIntegration.isEnabled()) {
@@ -137,10 +127,10 @@ public class SpectralBlocksPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (ghostBlockManager != null) ghostBlockManager.getPacketUtil().removeAllDisplayEntities();
         if (particleManager != null) particleManager.stop();
         if (auditLogger != null) auditLogger.shutdown();
         if (storage != null) storage.close();
-        PacketEvents.getAPI().terminate();
         getLogger().info("SpectralBlocks disabled.");
     }
 
